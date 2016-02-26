@@ -285,7 +285,7 @@ Example:
 
             set: function (value) {
             
-                
+                this.initialized=false;
                 if(!this.initialized){
                     this.clear();
                     this.config = value.config||{};
@@ -324,16 +324,20 @@ Example:
             // Element Lifecycle
 
             ready: function () {
-                sigma.classes.graph.addMethod('neighbors', function (nodeId) {
-                    var k,
-                        neighbors = {},
-                        index = this.allNeighborsIndex[nodeId] || {};
+                try {
+                  sigma.classes.graph.addMethod('neighbors', function (nodeId) {
+                      var k,
+                          neighbors = {},
+                          index = this.allNeighborsIndex[nodeId] || {};
 
-                    for (k in index)
-                        neighbors[k] = this.nodesIndex[k];
+                      for (k in index)
+                          neighbors[k] = this.nodesIndex[k];
 
-                    return neighbors;
-                });
+                      return neighbors;
+                  });
+                  
+                } catch (e) {
+                }
             },
             getRandomInt: function (min, max) {
                 return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -357,7 +361,7 @@ Example:
                     this.config.curves = config.curves;
                 }
                 else {
-                    this.config.curves = true;
+                    this.config.curves = false;
                 }
 
                 this.config.defaultNodeColor = config.defaultNodeColor || '#ec5148';
@@ -383,7 +387,10 @@ Example:
 
                     }
                 });
+                
+                
                 this.filter = new sigma.plugins.filter(this.sigma);
+                
                 this.dragListener = sigma.plugins.dragNodes(this.sigma, this.sigma.renderers[0]);
 
                 // When a node is clicked, we check for each node
@@ -528,6 +535,7 @@ Example:
                     }, 'degree');
 
                 }
+               
                 this.filter.apply();
             },
 
@@ -611,8 +619,9 @@ Example:
                 this.$$('#filter-label').value = '';
                 
                 this.filter.undo().apply();
+                this.filter.clear();
             },
-            handleExportClicked: function () {
+            handleExportClicked: function (event) {
                 var index = event.target.selectedIndex;
                 if (index == 1) {
                     this.getSvg();
@@ -670,8 +679,8 @@ Example:
                     var node = this.data.nodes[i];
                     if (typeof node.x === 'undefined' || typeof node.y === 'undefined') {
                         hasPositionData = false;
-                        node.x = Math.random();
-                        node.y = Math.random();
+                        node.x = Math.random()*this.data.nodes.length;
+                        node.y = Math.random()*this.data.nodes.length;
                     }
                     if (typeof node.size === 'undefined') {
                         node.size = 1;
@@ -679,6 +688,7 @@ Example:
                 }
                 self.sigma.refresh();
                 self.sigma.graph.clear();
+                
                 self.sigma.graph.read(this.data);
 
                 self.sigma.graph.nodes().forEach(function (n) {
@@ -715,9 +725,9 @@ Example:
                 });
 
                 if (!hasPositionData) {
-                    self.sigma.startForceAtlas2({
-                        startingIterations: 10,
-                        outboundAttractionDistribution: true,
+                
+                    self.sigma.startForceAtlas2({   
+                        linLogMode: true,                       
                         gravity: 1
                     });
 
@@ -742,6 +752,7 @@ Example:
                 if (this.sigma) {
                     this.sigma.graph.clear();
                     this.handleReset();
+                    
                 }
             }
 
