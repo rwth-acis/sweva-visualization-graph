@@ -61,7 +61,7 @@ Example:
             }
 
             .hidden {
-                display: none;
+                display: none!important;
             }
 
             #sigma-canvas {
@@ -195,7 +195,7 @@ Example:
         <div class="title">{{label}}</div>
         <div id="sigma-canvas">
         </div>
-        <div id="info-box">
+        <div id="info-box" class$="{{getInfoBoxClass(showInfoBox)}}"}>
             <div class="inner">
                 <dl>
                     <dt>Label</dt>
@@ -279,6 +279,10 @@ Example:
                 label: {
                     type: String,
                     value: ''
+                },
+                showInfoBox: {
+                    type: Boolean,
+                    value: true
                 }
 
             },
@@ -347,23 +351,33 @@ Example:
                 this.initialized = true;
 
                 this.config.label = config.label || 'Graph';
-
+               
+                
+                
                 this.label = this.config.label;
 
-                if (this.config.directed) {
+                if (config.directed) {
                     this.config.directed = config.directed;
                 }
                 else {
                     this.config.directed = false;
                 }
 
-                if (this.config.curves) {
+                if (config.curves) {
                     this.config.curves = config.curves;
                 }
                 else {
                     this.config.curves = false;
                 }
-
+                
+                if (typeof config.showInfoBox !== 'undefined') {
+                    this.config.showInfoBox = config.showInfoBox;
+                }
+                else {
+                    this.config.showInfoBox = true;
+                }
+                this.showInfoBox = this.config.showInfoBox;
+                
                 this.config.defaultNodeColor = config.defaultNodeColor || '#ec5148';
                 var self = this;
 
@@ -425,6 +439,10 @@ Example:
                     // call the refresh method to make the colors
                     // update effective.
                     self.sigma.refresh();
+                });
+                
+                this.sigma.bind('doubleClickNode rightClickNode', function(e) {
+                  self.fire('nodeclicked', e.data.node.attributes);
                 });
                 this.sigma.bind('overNode', function (e) {
 
@@ -727,8 +745,9 @@ Example:
                 if (!hasPositionData) {
                 
                     self.sigma.startForceAtlas2({   
-                        linLogMode: true,                       
-                        gravity: 1
+                        linLogMode: true,   
+                        
+                        gravity: 2
                     });
 
                     setTimeout(function () {
@@ -753,6 +772,14 @@ Example:
                     this.sigma.graph.clear();
                     this.handleReset();
                     
+                }
+            },
+            getInfoBoxClass: function(show){
+                if(show){
+                    return '';
+                }
+                else {
+                    return 'hidden';
                 }
             }
 
