@@ -19,12 +19,13 @@
     "/test/"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.2.0",    
+    "polymer": "Polymer/polymer#^2.0.0",
     "download-as-file": "https://github.com/bahmutov/download-as-file.git",
     "sigma": "https://github.com/jacomyal/sigma.js/releases/download/v1.1.0/release-v1.1.0.zip"
   },
   "devDependencies": {
-    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
-    "web-component-tester": "^4.0.0"
+    "iron-component-page": "PolymerElements/iron-component-page#^3.0.1",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0",
+    "web-component-tester": "^6.0.0"
   }
 }
